@@ -27,15 +27,15 @@ Before you begin, ensure you have the following installed on your machine:
 
     Create a .env file in the root directory of the project. Here's an example of what to include:
 
-    DB_HOST=localhost
-    DB_PORT=5432
-    DB_NAME=test-db
-    DB_USER=postgres
-    DB_PASSWORD=postgres
-    REDIS_HOST=localhost
-    REDIS_PORT=6379
-    RABBITMQ_URL=amqp://localhost
-    JWT_SECRET=your-jwt-secret
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=test-db
+   DB_USER=postgres
+   DB_PASSWORD=postgres
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   RABBITMQ_URL=amqp://localhost
+   JWT_SECRET=your-jwt-secret
 
 4. Running the Project
 
