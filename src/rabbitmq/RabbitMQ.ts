@@ -1,4 +1,5 @@
 import amqp, { Channel, Connection } from 'amqplib';
+import log from "../utils/logger";
 
 class RabbitMQ {
   private static connection: Connection;
@@ -8,9 +9,9 @@ class RabbitMQ {
     try {
       this.connection = await amqp.connect(url);
       this.channel = await this.connection.createChannel();
-      console.log('Connected to RabbitMQ');
+      log.info('Connected to RabbitMQ');
     } catch (error) {
-      console.error('Error connecting to RabbitMQ:', error);
+      log.error('Error connecting to RabbitMQ:', error);
     }
   }
 
@@ -25,30 +26,30 @@ class RabbitMQ {
                 this.channel.nack(msg, false, true);
             }
         }, { noAck: false });
-        console.log(`Existing messages in queue "${queue}":`, messages);
+        log.info(`Existing messages in queue "${queue}":`, messages);
         messages.push(message);
-        console.log('Final messages in queue after append:', messages);
+        log.info('Final messages in queue after append:', messages);
       }
       this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
         persistent: true,
       });
-      console.log(`Message published to queue "${queue}":`, message);
+      log.info(`Message published to queue "${queue}":`, message);
     } catch (error) {
-      console.error('Error publishing message:', error);
+      log.error('Error publishing message:', error);
     }
   }
 
   static async consume(queue: string, onMessage: (msg: Record<string, unknown>) => void): Promise<void> {
     try {
       await this.channel.assertQueue(queue, { durable: true });
-      console.log(`Waiting for messages in queue "${queue}"...`);
+      log.info(`Waiting for messages in queue "${queue}"...`);
 
       this.channel.consume(
         queue,
         (msg) => {
           if (msg) {
             const content = JSON.parse(msg.content.toString());
-            console.log('Message received:', content);
+            log.info('Message received:', content);
 
             // Call the provided handler
             onMessage(content);
@@ -60,14 +61,14 @@ class RabbitMQ {
         { noAck: false }
       );
     } catch (error) {
-      console.error('Error consuming messages:', error);
+      log.error('Error consuming messages:', error);
     }
   }
 
   static async close(): Promise<void> {
     await this.channel.close();
     await this.connection.close();
-    console.log('RabbitMQ connection closed');
+    log.info('RabbitMQ connection closed');
   }
 }
 

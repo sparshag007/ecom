@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import sequelize from '../database/sequelize';
 import redis from '../utils/redisClient';
 import RabbitMQ from '../rabbitmq/RabbitMQ';
-
+import log from "../utils/logger";
 const CACHE_KEY = 'products';
 
 // Create a product
@@ -29,7 +29,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const cachedProducts = await redis.get(CACHE_KEY);
     if (cachedProducts) {
-      console.log('Returning cached products');
+      log.info('Returning cached products');
       res.status(200).json(JSON.parse(cachedProducts));
       return;
     }
@@ -39,7 +39,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
       },
     });
     await redis.set(CACHE_KEY, JSON.stringify(products), 'EX', 24 * 60 * 60); // 1 day
-    console.log('Returning fresh products');
+    log.info('Returning fresh products');
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error });
@@ -63,10 +63,10 @@ export const getProductById = async (req: Request, res: Response) => {
     const productId = product.id;
     RabbitMQ.publish('product_view_queue', { productId }, true)
       .then(() => {
-        console.log(`Product ID ${productId} pushed to the queue.`);
+        log.info(`Product ID ${productId} pushed to the queue.`);
       })
       .catch((error) => {
-        console.error(`Error pushing product ID ${productId} to the queue:`, error);
+        log.error(`Error pushing product ID ${productId} to the queue:`, error);
     });
 
     res.status(200).json(product);

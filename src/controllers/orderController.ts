@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import {Order} from '../database/models/Order';
 import {Product} from '../database/models/Product';
 import RabbitMQ from '../rabbitmq/RabbitMQ';
+import log from "../utils/logger";
 
 // Create Order
 export const createOrder = async (req: Request, res: Response) => {
@@ -52,7 +53,7 @@ export const createOrder = async (req: Request, res: Response) => {
     // Send confirmation response
     res.status(201).json({ message: 'Order created successfully', order });
     } catch (error) {
-    console.error(error);
+    log.error(error);
     res.status(500).json({ message: 'Error creating order' });
     }
 };
@@ -84,7 +85,7 @@ export const updateOrder = async (req: Request, res: Response) => {
         await order.save();
         res.status(200).json({ message: 'Order updated successfully', order });
     } catch (error) {
-        console.error(error);
+        log.error(error);
         res.status(500).json({ message: 'Error updating order' });
     }
 };
@@ -100,7 +101,7 @@ export const getOrders = async (req: Request, res: Response) => {
         const orders = await Order.findAll({ where: { userId } });
         res.status(200).json(orders);
     } catch (error) {
-        console.error(error);
+        log.error(error);
         res.status(500).json({ message: 'Error fetching orders' });
     }
 };

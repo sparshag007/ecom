@@ -3,6 +3,7 @@ import { Request, RequestHandler, Response } from 'express';
 import bcrypt from 'bcrypt';
 import {User} from '../database/models/User';  // Assuming User model is already set up
 import { generateToken } from '../utils/jwtUtils';  // Function to generate JWT
+import log from "../utils/logger";
 
 const saltRounds = 10;
 
@@ -38,7 +39,7 @@ export const registerUser : RequestHandler = async (req: Request, res: Response)
       // Send response with the token
       res.status(201).json({ message: 'User registered successfully', token });
     } catch (error) {
-      console.error(error);
+      log.error(error);
       res.status(500).json({ message: 'Server error' });
     }
   };
@@ -72,7 +73,7 @@ export const loginUser: RequestHandler = async (req: Request, res: Response) => 
   
       res.status(200).json({ message: 'Login successful', token });
     } catch (error) {
-      console.error(error);
+      log.error(error);
       res.status(500).json({ message: 'Server error' });
     }
   };

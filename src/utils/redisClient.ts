@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import log from "../utils/logger";
 
 const redis = new Redis({
   host: '127.0.0.1', // Default Redis host
@@ -8,11 +9,11 @@ const redis = new Redis({
 });
 
 redis.on('connect', () => {
-  console.log('Connected to Redis');
+  log.info('Connected to Redis');
 });
 
 redis.on('error', (err) => {
-  console.error('Redis connection error:', err);
+  log.error('Redis connection error:', err);
 });
 // /opt/homebrew/etc/redis.conf
 export default redis;

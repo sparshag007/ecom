@@ -10,6 +10,7 @@ import reportRoutes from "./routes/reportRoutes";
 import RabbitMQ from "./rabbitmq/RabbitMQ";
 import TaskScheduler from "./scheduleTask";
 import rateLimit from 'express-rate-limit';
+import log from "./utils/logger";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,14 +29,14 @@ export const limiter = rateLimit({
 const wss = new WebSocketServer({ port: WEBSOCKET_PORT});
 
 wss.on("connection", (ws) => {
-  console.log("Client connected");
+  log.info("Client connected");
 
   ws.on("message", (message) => {
-    console.log(`Received: ${message}`);
+    log.info(`Received: ${message}`);
     ws.send("Message received");
   });
 
-  ws.on("close", () => console.log("Client disconnected"));
+  ws.on("close", () => log.info("Client disconnected"));
 });
 
 app.use(express.json());
@@ -55,6 +56,6 @@ app.use('/api/report', reportRoutes)
 
 sequelize.sync().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    log.info(`Application is starting up at PORT ${PORT}...`);
   });
 });
