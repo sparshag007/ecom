@@ -1,5 +1,5 @@
 import schedule from 'node-schedule';
-import { startOrderConsumer } from './rabbitmq/consumers/orderConsumer';
+import { startOrderConsumer, startProductViewConsumer } from './rabbitmq/consumers/orderConsumer';
 
 class TaskScheduler {
   static start() {
@@ -7,6 +7,11 @@ class TaskScheduler {
     schedule.scheduleJob('0 * * * *', () => {
       console.log('Job executed every hour');
       startOrderConsumer();
+    });
+
+    schedule.scheduleJob('* * * * *', () => {
+        console.log('Job executed every minute');
+        startProductViewConsumer();
     });
 
     // Schedule a job to run at 2 PM every day

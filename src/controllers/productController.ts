@@ -3,6 +3,7 @@ import { Product } from '../database/models/Product';
 import { Op } from 'sequelize';
 import sequelize from '../database/sequelize';
 import redis from '../utils/redisClient';
+import RabbitMQ from '../rabbitmq/RabbitMQ';
 
 const CACHE_KEY = 'products';
 
@@ -59,6 +60,15 @@ export const getProductById = async (req: Request, res: Response) => {
       res.status(404).json({ message: 'Active product not found' });
       return;
     }
+    const productId = product.id;
+    RabbitMQ.publish('product_view_queue', { productId })
+      .then(() => {
+        console.log(`Product ID ${productId} pushed to the queue.`);
+      })
+      .catch((error) => {
+        console.error(`Error pushing product ID ${productId} to the queue:`, error);
+    });
+
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product', error });
