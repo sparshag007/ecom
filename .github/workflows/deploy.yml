@@ -20,7 +20,7 @@ jobs:
 
       - name: Configure gcloud
         run: |
-          gcloud config set project YOUR_PROJECT_ID
+          gcloud config set project soy-sunrise-447921-v4
           gcloud auth configure-docker
 
       - name: Deploy to Cloud Run
