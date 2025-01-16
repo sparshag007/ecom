@@ -3,17 +3,14 @@ import {User} from './models/User';
 import { Product } from './models/Product';
 import { Order } from './models/Order';
 import { SalesInsight } from './models/SalesInsight';
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Create a new Sequelize instance
-const sequelize = new Sequelize({
+const sequelize = new Sequelize(process.env.DATABASE_URL as string, {
   dialect: 'postgres',
-  host: 'localhost',
-  username: 'postgres',
-  password: 'postgres',
-  database: 'test-db',
   logging: false,
-  models: [User, Product, Order, SalesInsight], // Automatically load models from the models folder
+  models: [User, Product, Order, SalesInsight],
 });
 
 export default sequelize;

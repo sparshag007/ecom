@@ -1,4 +1,3 @@
-// src/routes/orderRoutes.ts
 import { Router } from 'express';
 import { createOrder, updateOrder, getOrders } from '../controllers/orderController';
 import { authenticateToken, authorizeRole } from '../middlewares/auth';

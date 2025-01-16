@@ -15,7 +15,7 @@ class User extends Model {
   password!: string;
 
   @Column({ type: DataType.STRING, defaultValue: 'user' })
-  role!: string; // Default role is 'user'
+  role!: string;
 }
 
 export { User };

@@ -1,4 +1,3 @@
-// src/routes/productRoutes.ts
 import { Router } from 'express';
 import {
   createProduct,
@@ -12,7 +11,6 @@ import { authenticateToken, authorizeRole } from '../middlewares/auth';
 
 const router = Router();
 
-// Product CRUD operations
 router.post('/', authenticateToken, authorizeRole(['admin']), createProduct); // Create a new product
 router.get('/', getAllProducts); // Get all products
 router.get('/search', getProductsWithFilters); // Search and filter products

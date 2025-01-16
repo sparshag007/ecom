@@ -1,4 +1,3 @@
-// src/utils/jwtUtils.ts
 import jwt from 'jsonwebtoken';
 
 const secretKey = 'your_secret_key'; // In production, use an environment variable

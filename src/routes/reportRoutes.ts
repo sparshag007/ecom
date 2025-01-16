@@ -1,4 +1,3 @@
-// src/routes/reportRoutes.ts
 import { Router } from 'express';
 import { getTotalSales } from '../controllers/reportController';
 

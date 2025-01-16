@@ -1,18 +1,15 @@
-// src/controllers/reportController.ts
 import { Request, Response } from 'express';
-import { Order } from '../database/models/Order';  // Assuming you have Order model
+import { Order } from '../database/models/Order';
 import { Op, Sequelize } from 'sequelize';
-import moment from 'moment'; // You can use moment.js or any other date library
+import moment from 'moment';
 
 // Function to get total sales with filters
 export const getTotalSales = async (req: Request, res: Response) => {
   const { location, lastMonth, lastYear } = req.query;
 
   try {
-    // Create an object to hold the filter conditions
     const filterConditions: any = {};
 
-    // Filter by location if provided
     if (location) {
       filterConditions.location = location;
     }
@@ -38,9 +35,9 @@ export const getTotalSales = async (req: Request, res: Response) => {
     // Get the total sales using the applied filters
     const totalSales = await Order.sum('totalPrice', {
       where: filterConditions,
-      logging: (sql) => {
-        console.log('Raw SQL Query:', sql); // Log the raw SQL query
-      }
+      // logging: (sql) => {
+      //   console.log('Raw SQL Query:', sql); // Log the raw SQL query
+      // }
     });
 
     res.status(200).json({ totalSales });
