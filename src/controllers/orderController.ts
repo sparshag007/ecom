@@ -66,7 +66,6 @@ export const updateOrder = async (req: Request, res: Response) => {
     const userId = req.user.id;
     const userRole = req.user.role;
     const { orderId, status } = req.body;
-    console.log(status)
     if (userRole === 'user' && status !== 'Cancelled') {
         res.status(500).json({ message: 'User not permitted this action' });
         return;

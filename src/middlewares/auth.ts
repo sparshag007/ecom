@@ -13,8 +13,6 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 
   try {
     const decoded = verifyToken(token) as JwtPayloadWithRole; // Verify the token
-    console.log(JSON.stringify(decoded));
-    console.log(typeof decoded);
     req.user = decoded; // Attach the decoded token to the request
     next(); // Proceed to the next middleware or route
   } catch (error) {
