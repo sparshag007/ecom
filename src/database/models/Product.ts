@@ -17,7 +17,7 @@ class Product extends Model {
   @Column({ type: DataType.FLOAT, allowNull: false })
   price!: number;
 
-  @Column({ type: DataType.NUMBER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   quantity!: number;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: true })

@@ -27,7 +27,7 @@ module.exports = {
         allowNull: false,
       },
       quantity: {
-        type: Sequelize.INTEGER, // Using INTEGER instead of NUMBER
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       createdAt: {

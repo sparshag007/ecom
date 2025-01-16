@@ -49,13 +49,27 @@ app.use(limiter);
 
 TaskScheduler.start();
 
-app.use('/api/auth', authRoutes);
-app.use('/api/product', productRoutes);
-app.use('/api/order', orderRoutes);
-app.use('/api/report', reportRoutes)
+const runMigrations = async (): Promise<void> => {
+  try {
+    await sequelize.authenticate();
+    log.info("Connection to DB has been established successfully.");
+    
+    // Run pending migrations (this syncs the DB schema with models)
+    await sequelize.sync({ alter: true });
+    
+    log.info("Migrations completed successfully!");
+  } catch (error) {
+    log.error("Error running migrations: ", error);
+  }
+};
 
-sequelize.sync().then(() => {
+runMigrations().then(() => {
+  app.use('/api/auth', authRoutes);
+  app.use('/api/product', productRoutes);
+  app.use('/api/order', orderRoutes);
+  app.use('/api/report', reportRoutes);
+
   app.listen(PORT, () => {
     log.info(`Application is starting up at PORT ${PORT}...`);
   });
-});
+})
