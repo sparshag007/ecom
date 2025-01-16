@@ -17,7 +17,7 @@ Before you begin, ensure you have the following installed on your machine:
 1. **Clone the repository:**
 
    git clone https://github.com/sparshag007/ecom.git
-   cd <into the project>
+   cd into the project
 
 2. **Install the dependencies:**
 
