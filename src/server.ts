@@ -7,6 +7,8 @@ import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import './utils/redisClient';
 import reportRoutes from "./routes/reportRoutes";
+import RabbitMQ from "./rabbitmq/RabbitMQ";
+import TaskScheduler from "./scheduleTask";
 
 const app = express();
 const PORT = 3000;
@@ -28,13 +30,19 @@ wss.on("connection", (ws) => {
 app.use(express.json());
 app.use(cors());
 
+(async () => {
+  await RabbitMQ.connect('amqp://localhost');
+})();
+
+TaskScheduler.start();
+
 app.use('/api/auth', authRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/report', reportRoutes)
 
 sequelize.sync().then(() => {
-  app.listen(3000, () => {
+  app.listen(PORT, () => {
     console.log('Server running on port 3000');
   });
 });

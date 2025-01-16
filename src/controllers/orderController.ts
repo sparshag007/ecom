@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import {Order} from '../database/models/Order';
 import {Product} from '../database/models/Product';
+import RabbitMQ from '../rabbitmq/RabbitMQ';
 
 // Create Order
 export const createOrder = async (req: Request, res: Response) => {
@@ -32,6 +33,17 @@ export const createOrder = async (req: Request, res: Response) => {
 
     // Create order
     const order = await Order.create({ userId, productId, quantity, totalPrice, address, location });
+
+    // Publish the order data to RabbitMQ
+    RabbitMQ.publish('orderQueue', {
+        orderId: order.id,
+        userId: req.user.id,
+        productId,
+        quantity,
+        totalPrice,
+        address,
+        location,
+    });
 
     // Update inventory
     product.quantity -= quantity;
