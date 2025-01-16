@@ -1,11 +1,9 @@
-// src/controllers/orderController.ts
 import { Request, Response } from 'express';
 import {Order} from '../database/models/Order';
 import {Product} from '../database/models/Product';
 import RabbitMQ from '../rabbitmq/RabbitMQ';
 import log from "../utils/logger";
 
-// Create Order
 export const createOrder = async (req: Request, res: Response) => {
   
     if (!req.user) {
@@ -32,7 +30,6 @@ export const createOrder = async (req: Request, res: Response) => {
     // Calculate total price
     const totalPrice = product.price * quantity;
 
-    // Create order
     const order = await Order.create({ userId, productId, quantity, totalPrice, address, location });
 
     // Publish the order data to RabbitMQ
@@ -50,7 +47,6 @@ export const createOrder = async (req: Request, res: Response) => {
     product.quantity -= quantity;
     await product.save();
 
-    // Send confirmation response
     res.status(201).json({ message: 'Order created successfully', order });
     } catch (error) {
     log.error(error);
@@ -58,7 +54,6 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 };
 
-// Update Order
 export const updateOrder = async (req: Request, res: Response) => {
     if (!req.user) {
         res.status(401).json({ message: 'User not authenticated' });

@@ -1,4 +1,3 @@
-// src/middlewares/authMiddleware.ts
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { verifyToken } from '../utils/jwtUtils';
 import { JwtPayloadWithRole } from 'types/jwt';

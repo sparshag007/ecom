@@ -1,13 +1,11 @@
-// src/controllers/authController.ts
 import { Request, RequestHandler, Response } from 'express';
 import bcrypt from 'bcrypt';
-import {User} from '../database/models/User';  // Assuming User model is already set up
-import { generateToken } from '../utils/jwtUtils';  // Function to generate JWT
+import {User} from '../database/models/User';
+import { generateToken } from '../utils/jwtUtils';
 import log from "../utils/logger";
 
 const saltRounds = 10;
 
-// Register user
 export const registerUser : RequestHandler = async (req: Request, res: Response) => {
     try {
       const { username, email, password, role = 'user' } = req.body;
@@ -22,10 +20,8 @@ export const registerUser : RequestHandler = async (req: Request, res: Response)
         return;
       }
   
-      // Hash the password
       const hashedPassword = await bcrypt.hash(password, saltRounds);
   
-      // Create the user
       const newUser = await User.create({
         username,
         email,
@@ -33,10 +29,8 @@ export const registerUser : RequestHandler = async (req: Request, res: Response)
         role,
       });
   
-      // Generate JWT token
       const token = generateToken(newUser.id, newUser.email, newUser.role);
   
-      // Send response with the token
       res.status(201).json({ message: 'User registered successfully', token });
     } catch (error) {
       log.error(error);
@@ -44,7 +38,6 @@ export const registerUser : RequestHandler = async (req: Request, res: Response)
     }
   };
 
-// Login user
 export const loginUser: RequestHandler = async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
@@ -54,21 +47,18 @@ export const loginUser: RequestHandler = async (req: Request, res: Response) => 
         return;
       }
   
-      // Check if the user exists
       const user = await User.findOne({ where: { email } });
       if (!user) {
         res.status(400).json({ message: 'Invalid email or password' });
         return;
       }
   
-      // Compare passwords
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         res.status(400).json({ message: 'Invalid email or password' });
         return;
       }
   
-      // Generate JWT token
       const token = generateToken(user.id, user.email, user.role);
   
       res.status(200).json({ message: 'Login successful', token });
