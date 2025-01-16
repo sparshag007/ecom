@@ -61,7 +61,7 @@ export const getProductById = async (req: Request, res: Response) => {
       return;
     }
     const productId = product.id;
-    RabbitMQ.publish('product_view_queue', { productId })
+    RabbitMQ.publish('product_view_queue', { productId }, true)
       .then(() => {
         console.log(`Product ID ${productId} pushed to the queue.`);
       })

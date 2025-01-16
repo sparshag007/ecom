@@ -14,9 +14,21 @@ class RabbitMQ {
     }
   }
 
-  static async publish(queue: string, message: Record<string, unknown>): Promise<void> {
+  static async publish(queue: string, message: Record<string, unknown>, append: boolean = false): Promise<void> {
     try {
       await this.channel.assertQueue(queue, { durable: true });
+      if (append) {
+        const messages: Array<Record<string, unknown>> = [];
+        await this.channel.consume(queue, (msg) => {
+            if (msg) {
+                messages.push(JSON.parse(msg.content.toString()));
+                this.channel.nack(msg, false, true);
+            }
+        }, { noAck: false });
+        console.log(`Existing messages in queue "${queue}":`, messages);
+        messages.push(message);
+        console.log('Final messages in queue after append:', messages);
+      }
       this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
         persistent: true,
       });
