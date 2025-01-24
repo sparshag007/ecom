@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/jwtUtils';
-import { JwtPayloadWithRole } from 'types/jwt';
+import { RequestUser } from 'types/requestuser';
 
 // Middleware to check if JWT token is valid and attached to the request
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +11,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   }
 
   try {
-    const decoded = verifyToken(token) as JwtPayloadWithRole; // Verify the token
+    const decoded = verifyToken(token); // Verify the token
     req.user = decoded; // Attach the decoded token to the request
     next(); // Proceed to the next middleware or route
   } catch (error) {
@@ -19,21 +19,14 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   }
 };
 
-// Middleware to check the user's role
+// Role-based Authorization Middleware (AuthZ)
 export const authorizeRole = (roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      res.status(401).json({ message: 'User not authenticated' });
-      return;
-    }
-
-    const role  = req.user.role;
-
-    if (!roles.includes(role)) {
+  return (req: Request, res: Response, next: NextFunction) : void => {
+    const user = req.user as RequestUser;
+    if (!roles.includes(user.role)) {
       res.status(403).json({ message: 'Access denied, insufficient privileges' });
       return;
     }
-
-    next(); // Proceed if the user has the correct role
+    next();
   };
 };

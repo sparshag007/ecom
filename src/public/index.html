@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js Static Page</title>
+  <link rel="stylesheet" href="/styles.css"> <!-- Include static CSS -->
+</head>
+<body>
+  <header>
+    <h1>Welcome to My Node.js App</h1>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>About This Page</h2>
+      <p>This is a simple static HTML file served through Node.js.</p>
+    </section>
+    <input type="text" id="message" placeholder="Enter Message" />
+    <button id="sendBtn">Send</button>
+    <section>
+      <h2>Features</h2>
+      <ul>
+        <li>Static content</li>
+        <li>Easy to integrate with Node.js</li>
+        <li>Customizable and extendable</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Your Name or Company. All rights reserved.</p>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script> <!-- Include static JavaScript -->
+  <script>
+    const socket = io();
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('message');
+    sendBtn.addEventListener('click', (e) => {
+        const message = messageInput.value;
+        console.log(message);
+        socket.emit('user-message', message);
+    });
+  </script>
+</body>
+</html>

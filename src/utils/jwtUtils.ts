@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const secretKey = 'your_secret_key'; // In production, use an environment variable
+const secretKey = process.env.JWT_SECRET || 'yoursecret'; // In production, use an environment variable
 
 // Function to generate JWT token
 export const generateToken = (id: number, email: string, role: string) => {

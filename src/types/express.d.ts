@@ -1,9 +1,9 @@
-import { JwtPayload } from "jsonwebtoken";
+import { RequestUser } from "./requestuser";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayloadWithRole; // Add the type of `user` based on your JWT payload
+      user: RequestUser
     }
   }
 }

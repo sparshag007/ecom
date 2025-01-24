@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import {User} from '../database/models/User';
 import { generateToken } from '../utils/jwtUtils';
 import log from "../utils/logger";
+import { RequestUser } from '../types/requestuser';
 
 const saltRounds = 10;
 
@@ -27,6 +28,7 @@ export const registerUser : RequestHandler = async (req: Request, res: Response)
         email,
         password: hashedPassword,
         role,
+        googleId: null
       });
   
       const token = generateToken(newUser.id, newUser.email, newUser.role);
@@ -36,34 +38,21 @@ export const registerUser : RequestHandler = async (req: Request, res: Response)
       log.error(error);
       res.status(500).json({ message: 'Server error' });
     }
-  };
+};
 
 export const loginUser: RequestHandler = async (req: Request, res: Response) => {
-    try {
-      const { email, password } = req.body;
-
-      if (!email || !password) {
-        res.status(400).json({ message: 'All fields are required: username, email, and password' });
-        return;
-      }
-  
-      const user = await User.findOne({ where: { email } });
-      if (!user) {
-        res.status(400).json({ message: 'Invalid email or password' });
-        return;
-      }
-  
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        res.status(400).json({ message: 'Invalid email or password' });
-        return;
-      }
-  
-      const token = generateToken(user.id, user.email, user.role);
-  
-      res.status(200).json({ message: 'Login successful', token });
-    } catch (error) {
-      log.error(error);
-      res.status(500).json({ message: 'Server error' });
+  try {
+    const user = req.user as RequestUser;
+    if (!user) {
+      res.status(400).json({ message: 'User not authenticated.' });
+      return;
     }
-  };
+
+    const token = generateToken(user.id, user.email, user.role);
+    res.status(200).json({ message: 'Login successful', token });
+  } catch (error) {
+    log.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+

@@ -3,15 +3,16 @@ import {Order} from '../database/models/Order';
 import {Product} from '../database/models/Product';
 import RabbitMQ from '../rabbitmq/RabbitMQ';
 import log from "../utils/logger";
+import { RequestUser } from '../types/requestuser';
 
 export const createOrder = async (req: Request, res: Response) => {
-  
-    if (!req.user) {
+    const user = req.user as RequestUser;
+    if (!user) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
     }
 
-    const userId = req.user.id;
+    const userId = user.id;
   
     const { productId, quantity, address, location } = req.body;
 
@@ -35,7 +36,7 @@ export const createOrder = async (req: Request, res: Response) => {
     // Publish the order data to RabbitMQ
     RabbitMQ.publish('orderQueue', {
         orderId: order.id,
-        userId: req.user.id,
+        userId: user.id,
         productId,
         quantity,
         totalPrice,
@@ -55,12 +56,16 @@ export const createOrder = async (req: Request, res: Response) => {
 };
 
 export const updateOrder = async (req: Request, res: Response) => {
-    if (!req.user) {
+    const user = req.user as RequestUser;
+    if (!user) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
     }
-    const userId = req.user.id;
-    const userRole = req.user.role;
+
+    // Narrow down the type of req.user
+    let userId: number = user.id;
+    let userRole: string = user.role;
+
     const { orderId, status } = req.body;
     if (userRole === 'user' && status !== 'Cancelled') {
         res.status(500).json({ message: 'User not permitted this action' });
@@ -87,11 +92,12 @@ export const updateOrder = async (req: Request, res: Response) => {
 
 // Get Orders (for a specific user)
 export const getOrders = async (req: Request, res: Response) => {
-    if (!req.user) {
+    const user = req.user as RequestUser;
+    if (!user) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
     }
-    const userId = req.user.id;
+    const userId = user.id;
     try {
         const orders = await Order.findAll({ where: { userId } });
         res.status(200).json(orders);
